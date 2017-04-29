@@ -25,7 +25,7 @@ namespace 拼图
             InitializeComponent();
 
             //
-            // TODO: Add constructor code after the InitializeComponent() call.
+            //
             //
         }
 
@@ -50,6 +50,8 @@ namespace 拼图
                 } catch {
                     MessageBox.Show("只能输入正数！");
                     box.Text = "";
+                    box.SelectAll();
+                    box.Focus();
                 }
 
             if (textBox1.Text == "" || textBox2.Text == "")
