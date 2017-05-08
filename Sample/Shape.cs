@@ -8,14 +8,11 @@ namespace Shape
         static void Main(string[] args)
         {
             double sum = 0;
-            Rectangle r = new Rectangle(1, 2);
-            Cube cu = new Cube(2);
-            Circle c = new Circle(2);
-            Triangle t = new Triangle(2);
-            List<dynamic> o = new List<dynamic>() { r, cu, c, t };
+            List<Shape> o = new List<Shape>() { new Rectangle(1, 2), new Cube(2), new Circle(2), new Triangle(2) };
             foreach (var e in o)
                 sum += e.Area();
-            Console.WriteLine("Rectangle:{0:F2}, Cube:{1:F2}, Circle:{2:F2}, Triangle:{3:F2}, Sum:{4:F2}", r.Area(), cu.Area(), c.Area(), t.Area(), sum);
+            Console.WriteLine("Rectangle:{0:F2}, Cube:{1:F2}, Circle:{2:F2}, Triangle:{3:F2}, Sum:{4:F2}",
+                             o[0].Area(), o[1].Area(), o[2].Area(), o[3].Area(), sum);
             Console.ReadKey();
         }
     }
