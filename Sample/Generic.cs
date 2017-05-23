@@ -33,7 +33,7 @@ namespace _11._3_1
     }
 }
 
-namespace _11._3_4
+namespace _11._3_4// 类型推断
 {
     class Program
     {
@@ -62,9 +62,51 @@ namespace _11._3_4
             t2 = temp;
         }
     }
+}
 
-    public class Test<T>
+namespace _17._5// 协变性
+{
+    class Program
     {
+        static void Main(string[] args)
+        {
+            // 初始化泛型实例
+            List<object> listobject = new List<object>();
+            List<string> liststrs = new List<string>();
 
+            listobject.AddRange(liststrs);  //成功
+            //liststrs.AddRange(listobject); // 出错
+        }
+    }
+}
+
+namespace _17._6// 逆变性
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 初始化泛型实例
+            List<object> listobject = new List<object>();
+            List<string> liststrs = new List<string>();
+
+            // 初始化TestComparer实例
+            IComparer<object> objComparer = new TestComparer();
+            IComparer<string> stringComparer = new TestComparer();
+
+            liststrs.Sort(objComparer);  // 正确
+
+            // 出错
+            //listobject.Sort(stringComparer);
+        }
+    }
+
+    // 自定义类实现IComparer<object>接口
+    public class TestComparer : IComparer<object>
+    {
+        public int Compare(object obj1, object obj2)
+        {
+            return obj1.ToString().CompareTo(obj2.ToString());
+        }
     }
 }
