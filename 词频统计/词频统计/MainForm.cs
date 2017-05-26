@@ -162,6 +162,7 @@ namespace 词频统计
             try {
                 fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write);
                 fs.Write(Encoding.ASCII.GetBytes(text), 0, text.Length);
+                fs.Flush();
                 return true;
             } catch {
                 MessageBox.Show("写入文件时发生了一个错误！\n请检查是否有足够的权限！", "错误！", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -260,7 +261,8 @@ namespace 词频统计
             SaveFileDialog saveFileDialog = new SaveFileDialog() {
                 InitialDirectory = Path.GetDirectoryName(fileFullPath),
                 FileName = Path.GetFileName(fileFullPath),
-                Filter = "文本文件(*.txt)|*.txt"
+                Filter = "文本文件(*.txt)|*.txt",
+                AddExtension = true
             };
             
             if (saveFileDialog.ShowDialog() == DialogResult.OK) {
@@ -372,6 +374,20 @@ namespace 词频统计
 //                    }
 //                }
 //            }
+        }
+        
+        void ContextMenuStrip1Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+//            if(sender.Equals(listView1))
+                contextMenuStrip1.Close();
+        }
+        void CopyToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            
+        }
+        void 排除ToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            
         }
     }
 }

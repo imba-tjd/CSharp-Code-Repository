@@ -8,6 +8,7 @@
  */
 using System;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace 词频统计
 {
@@ -16,12 +17,16 @@ namespace 词频统计
     /// </summary>
     internal sealed class Program
     {
+        [DllImport("user32.dll")] 
+        private static extern void SetProcessDPIAware();
+        
         /// <summary>
         /// Program entry point.
         /// </summary>
         [STAThread]
         private static void Main(string[] args)
         {
+            SetProcessDPIAware();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
