@@ -30,8 +30,7 @@ namespace 词频统计
         static Dictionary<string,int> statistics = new Dictionary<string, int>();
         static List<string> toRemove = new List<string>();
         
-        ///////////////////////////////////////////////////////////////
-        // 处理勾上和取消勾和一些其他的简单的功能
+        #region 处理勾上和取消勾和一些其他的简单的功能
         void 过滤介词ToolStripMenuItemClick(object sender, EventArgs e)
         {
             过滤介词ToolStripMenuItem.Checked = !过滤介词ToolStripMenuItem.Checked;
@@ -73,8 +72,9 @@ namespace 词频统计
             MessageBox.Show("by Imba-Tjd\n    2017/5/20", "关于");
         }
         
-        ///////////////////////////////////////////////////////////////
-        // 处理拖拽
+        #endregion
+        
+        #region 处理拖拽
         void MainFormDragEnter(object sender, DragEventArgs e)
         {
             e.Effect = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
@@ -96,8 +96,9 @@ namespace 词频统计
             LoadFile(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
         }
         
-        ///////////////////////////////////////////////////////////////
-        // 需要过滤掉的的单词
+        #endregion
+        
+        #region 需要过滤掉的的单词
         void UpdateToRemove()
         {
             toRemove.Clear();
@@ -154,8 +155,9 @@ namespace 词频统计
                 });
         }
         
-        ///////////////////////////////////////////////////////////////
-        // 读写文件
+        #endregion
+        
+        #region 读写文件
         bool WriteText(string text, string path)
         {
             FileStream fs = null;
@@ -206,7 +208,8 @@ namespace 词频统计
             
         }
         
-        ///////////////////////////////////////////////////////////////
+        #endregion
+        
         void NewNToolStripMenuItemClick(object sender, EventArgs e)// 按下New
         {
             DialogResult result = DialogResult.Cancel;

@@ -127,7 +127,7 @@ namespace 词频统计
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 3, 0, 3);
-            this.menuStrip1.Size = new System.Drawing.Size(744, 34);
+            this.menuStrip1.Size = new System.Drawing.Size(824, 34);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -291,10 +291,10 @@ namespace 词频统计
             this.toolStripStatusLabel4,
             this.toolStripStatusLabel5,
             this.toolStripStatusLabel6});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 426);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 538);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 17, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(744, 29);
+            this.statusStrip1.Size = new System.Drawing.Size(824, 29);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -341,7 +341,7 @@ namespace 词频统计
             this.panel1.Location = new System.Drawing.Point(0, 34);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(744, 392);
+            this.panel1.Size = new System.Drawing.Size(824, 504);
             this.panel1.TabIndex = 2;
             // 
             // splitContainer1
@@ -358,8 +358,8 @@ namespace 词频统计
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.listView1);
-            this.splitContainer1.Size = new System.Drawing.Size(744, 392);
-            this.splitContainer1.SplitterDistance = 514;
+            this.splitContainer1.Size = new System.Drawing.Size(824, 504);
+            this.splitContainer1.SplitterDistance = 569;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -370,7 +370,7 @@ namespace 词频统计
             this.textBox1.Location = new System.Drawing.Point(0, 0);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(514, 392);
+            this.textBox1.Size = new System.Drawing.Size(569, 504);
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.TextBox1TextChanged);
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.TextBox1DragDrop);
@@ -386,7 +386,7 @@ namespace 词频统计
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Margin = new System.Windows.Forms.Padding(4);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(225, 392);
+            this.listView1.Size = new System.Drawing.Size(250, 504);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -409,20 +409,20 @@ namespace 词频统计
             this.copyToolStripMenuItem,
             this.排除ToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(212, 97);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(139, 64);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.ContextMenuStrip1Opening);
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(138, 30);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItemClick);
             // 
             // 排除ToolStripMenuItem
             // 
             this.排除ToolStripMenuItem.Name = "排除ToolStripMenuItem";
-            this.排除ToolStripMenuItem.Size = new System.Drawing.Size(211, 30);
+            this.排除ToolStripMenuItem.Size = new System.Drawing.Size(138, 30);
             this.排除ToolStripMenuItem.Text = "排除";
             this.排除ToolStripMenuItem.Click += new System.EventHandler(this.排除ToolStripMenuItemClick);
             // 
@@ -431,7 +431,7 @@ namespace 词频统计
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(744, 455);
+            this.ClientSize = new System.Drawing.Size(824, 567);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
