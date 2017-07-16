@@ -27,6 +27,10 @@ namespace EventArgsExt
         // 定义事件
         public event MarryHandler MarryEvent;
 
+        //或：泛型委托使用自定义类
+        // public event EventHandler<MarryEventArgs> MarryEvent;
+
+
         // 发出事件
         public void OnBirthdayComing(string msg)
         {
