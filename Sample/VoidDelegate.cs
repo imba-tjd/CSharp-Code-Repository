@@ -51,9 +51,9 @@ namespace VoteDelegate
         // 闭包方法
         private static void closureMethod()
         {
-            // outVariable和capturedVariable对于匿名方法而言都是外部变量
+            // outVariable和count对于匿名方法而言都是外部变量
             string outVariable = "外部变量";
-            int num = 1;
+            int count = 1;
 
             //  而capturedVariable是被匿名方法捕获的外部变量
             string capturedVariable = "被捕获的外部变量";
