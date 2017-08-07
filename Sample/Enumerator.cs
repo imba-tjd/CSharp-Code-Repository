@@ -1,151 +1,64 @@
-// 《Learning Hard 学习笔记》代码
-// http://www.ituring.com.cn/book/1604
+﻿// Illustrated C# 2012
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
-namespace _12._9
+namespace Enumerator
 {
-    class Program
+    class ColorEnumerator : IEnumerator<string>
     {
-        static void Main(string[] args)
-        {
-            // 创建一个对象
-            Friends_v2 friendcollection = new Friends();
-            // Friends实现了IEnumerable所以可以使用foreach语句进行遍历
-            foreach (Friend f in friendcollection)
-            {
-                Console.WriteLine(f.Name);
-            }
+        string[] _colors;
+        int _position = -1;
 
-            Console.Read();
-        }
+        public ColorEnumerator(string[] theColors) => _colors = theColors.Clone() as string[];
 
-        // 朋友类
-        public class Friend
+        string this[int index] => _colors[index];
+
+        public string Current
         {
-            private string name;
-            public string Name
+            get
             {
-                get { return name; }
-                set { name = value; }
-            }
-            public Friend(string name)
-            {
-                this.name = name;
+                if (_position == -1 || _position >= _colors.Length)
+                    throw new InvalidOperationException();
+                return this[_position];
             }
         }
 
-        // 朋友集合
-        public class Friends_v1 : IEnumerable
+        object IEnumerator.Current => Current as object;
+
+        public void Dispose() { }
+
+        public bool MoveNext()
         {
-            private Friend[] friendarray;
-
-            public Friends()
+            if (_position < _colors.Length - 1)
             {
-                friendarray = new Friend[]
-            {
-                new Friend("张三"),
-                new Friend("李四"),
-                new Friend("王五")
-            };
+                _position++;
+                return true;
             }
-
-            // 索引器
-            public Friend this[int index]
-            {
-                get { return friendarray[index]; }
-            }
-
-            public int Count
-            {
-                get { return friendarray.Length; }
-            }
-
-            // 实现IEnumerable<T>接口方法
-            public IEnumerator GetEnumerator()
-            {
-                return new FriendIterator(this);
-            }
+            else
+                return false;
         }
 
-        //  C#1.0中实现迭代器代码——必须实现 IEnumerator接口
-        public class FriendIterator : IEnumerator
+        public void Reset()
         {
-            private readonly Friends friends;
-            private int index;
-            private Friend current;
-            internal FriendIterator(Friends friendcollection)
-            {
-                this.friends = friendcollection;
-                index = 0;
-            }
+            _position = -1;
+        }
+    }
 
-            // 实现IEnumerator接口中的方法
-            public object Current
-            {
-                get
-                {
-                    return this.current;
-                }
-            }
+    class Spectrum : IEnumerable<string>
+    {
+        string[] colors = { "violet", "blue", "cyan", "green", "yellw", "orange", "red" };
 
-            public bool MoveNext()
-            {
-                if (index + 1 > friends.Count)
-                {
-                    return false;
-                }
-                else
-                {
-                    this.current = friends[index];
-                    index++;
-                    return true;
-                }
-            }
-
-            public void Reset()
-            {
-                index = 0;
-            }
+        public IEnumerator<string> GetEnumerator()
+        {
+            return new ColorEnumerator(colors);
         }
 
-        public class Friends_v2 : IEnumerable
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            private Friend[] friendarray;
+            return new ColorEnumerator(colors);
 
-            public Friends()
-            {
-                friendarray = new Friend[]
-            {
-                new Friend("张三"),
-                new Friend("李四"),
-                new Friend("王五")
-            };
-            }
-
-            // 索引器
-            public Friend this[int index]
-            {
-                get { return friendarray[index]; }
-            }
-
-            public int Count
-            {
-                get { return friendarray.Length; }
-            }
-
-            // C# 2.0中简化迭代器的实现
-            public IEnumerator GetEnumerator()
-            {
-                for (int index = 0; index < friendarray.Length; index++)
-                {
-                    // 在C# 2.0中只需要使用下面语句就可以实现一个迭代器
-                    yield return friendarray[index];
-                }
-            }
+        }
     }
 }
