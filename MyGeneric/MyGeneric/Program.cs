@@ -8,8 +8,8 @@ namespace MyGeneric
     {
         static int Main()
         {
-            MyStack<int> a = new MyStack<int>(8 * 1024 + 1);
-            MySortedSet<int> b = new MySortedSet<int>();
+            MyStack<int> a = new MyStack<int>(8 * 1024);
+            MySortedList<int> b = new MySortedList<int>();
             a.Push(1);
             a.Push(2);
             a.Push(1);
@@ -46,6 +46,7 @@ namespace MyGeneric
                 throw new ArgumentOutOfRangeException(nameof(capacity), "栈大小不能为负！");
             if (capacity * System.Runtime.InteropServices.Marshal.SizeOf<T>() > 8 * 1024 * 4)
                 throw new ArgumentOutOfRangeException(nameof(capacity), "申请的栈太大！");
+
             Capacity = capacity;
             _stack = new T[capacity];
         }
@@ -64,6 +65,7 @@ namespace MyGeneric
 
             return _stack[_top];
         }
+
         public T Pop()
         {
             if (IsEmpty)
@@ -71,6 +73,7 @@ namespace MyGeneric
 
             return _stack[_top--];
         }
+
         public void Push(T e)
         {
             if (IsFull)
@@ -81,35 +84,41 @@ namespace MyGeneric
 
     }
 
-    class MySortedSet<T> : IEnumerable<T> where T : IComparable<T> // 有序集合
+    class MySortedList<T> : IEnumerable<T>, IReadOnlyList<T> where T : IComparable<T>
     {
-        T[] _mySet = new T[0];
-        public void Clear() => _mySet = new T[0];
-        public MySortedSet(int size = 256)
+        T[] _myList = new T[0]; // 数组使用时新建一个，不是创建对象时建立capacity大小的数组
+
+        public MySortedList(int capacity = 256)
         {
-            if (size < 0)
-                throw new ArgumentOutOfRangeException("集合大小不能为负！");
-            if (size > 512)
-                throw new ArgumentOutOfRangeException("申请的集合太大！");
-            MaxSize = size;
+            if (capacity < 0)
+                throw new ArgumentOutOfRangeException(nameof(capacity), "列表大小不能为负！");
+            if (capacity > 512)
+                throw new ArgumentOutOfRangeException(nameof(capacity), "申请的列表太大！");
+
+            Capacity = capacity;
         }
+
+        public void Clear() => _myList = new T[0];
+
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
-                yield return _mySet[i];
+                yield return _myList[i];
         }
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
-                yield return _mySet[i];
+                yield return _myList[i];
         }
-        public int Count => _mySet.Length;
-        public int MaxSize { get; private set; }
-        public T this[int index] => _mySet[index];
+
+        public int Count => _myList.Length;
+        public int Capacity { get; }
+        public T this[int index] => _myList[index];
 
         public bool Contains(T item)
         {
-            foreach (T e in _mySet)
+            foreach (T e in _myList)
                 if (e.Equals(item))
                     return true;
             return false;
@@ -117,25 +126,32 @@ namespace MyGeneric
 
         public bool Add(T item)
         {
-            if (Count == MaxSize)
-                throw new InvalidOperationException("集合已满！");
-            if (Contains(item))
-                return false;
+            if (Count == Capacity)
+                throw new InvalidOperationException("列表已满！");
 
             T[] tempSet = new T[Count + 1];
             tempSet[Count] = item; // 直接把元素添加到最后一个
             for (int i = 0, j = 0; i < Count - 1; i++)
             {
-                if (item.CompareTo(_mySet[i]) < 0)
+                if (item.CompareTo(_myList[i]) < 0)
                 {
                     tempSet[i] = item;
                     j = 1; //成功插入后，数组复制的下标相差1
                 }
-                tempSet[i + j] = _mySet[i]; //如已成功插入，则会覆盖刚才添加到最后的e
+                tempSet[i + j] = _myList[i]; //如已成功插入，则会覆盖刚才添加到最后的e
             }
-            _mySet = tempSet;
+            _myList = tempSet;
             return true;
         }
+
+        public bool AddRange(T[] collection)
+        {
+            foreach (var e in collection)
+                if (!Add(e))
+                    return false;
+            return true;
+        }
+
         public bool Remove(T item)
         {
             if (item == null)
@@ -145,7 +161,7 @@ namespace MyGeneric
 
             int itemi = -1;
             for (int i = 0; i < Count - 1; i++)
-                if (_mySet[i].Equals(item)) { itemi = i; break; }
+                if (_myList[i].Equals(item)) { itemi = i; break; }
             if (itemi == -1)
                 return false;
 
@@ -154,9 +170,9 @@ namespace MyGeneric
             {
                 if (i == itemi)
                     j = 1;
-                tempSet[i] = _mySet[i + j];
+                tempSet[i] = _myList[i + j];
             }
-            _mySet = tempSet;
+            _myList = tempSet;
             return true;
         }
     }
