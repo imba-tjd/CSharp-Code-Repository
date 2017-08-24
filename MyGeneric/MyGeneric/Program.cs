@@ -98,6 +98,11 @@ namespace MyGeneric
             Capacity = capacity;
         }
 
+        public MyList(MyList<T> myList)
+        {
+            throw new NotImplementedException();
+        }
+
         public int Count { get; private set; }
         public int Capacity { get; }
         public T this[int index] => _myList[index];
@@ -157,6 +162,16 @@ namespace MyGeneric
                     return true;
             return false;
         }
+
+        public bool RemoveAt(T item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Reverse(T item)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     class MySortedSet<T> : IEnumerable<T>, IReadOnlyCollection<T> where T : IComparable<T>
@@ -176,44 +191,106 @@ namespace MyGeneric
                 this.data = data;
                 this.next = next;
             }
+
+            public static Node operator ++(Node node) => node = node.next;
         }
 
-        public MySortedSet() => _head = new Node();
+        public MySortedSet(MySortedSetSequence sequence = MySortedSetSequence.SmallToBig)
+        {
+            _head = new Node();
+            Sequence = sequence;
+        }
 
-        public int Count => throw new NotImplementedException();
-        public T Max => throw new NotImplementedException();
-        public T Min => throw new NotImplementedException();
-        public T this[int index] => throw new NotImplementedException();
+        public MySortedSet(MySortedSet<T> mySortedSet)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Count { get; private set; }
+        public MySortedSetSequence Sequence { get; }
+        public T Max => Sequence == MySortedSetSequence.SmallToBig ? this[Count] : this[0];
+        public T Min => Sequence == MySortedSetSequence.SmallToBig ? this[0] : this[Count];
+        public T this[int index]
+        {
+            get
+            {
+                Node p = _head.next;
+
+                for (int i = 0; i < index; i++)
+                    p++;
+
+                return p.data;
+            }
+        }
+
         public void Clear() => _head.next = null;
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerator<T> GetEnumerator() => (this as IEnumerable).GetEnumerator() as IEnumerator<T>;
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            Node p = _head.next;
+
+            while (p != null)
+            {
+                yield return p.data;
+                p++;
+            }
         }
 
         public bool Add(T item)
         {
-            throw new NotImplementedException();
+            Node p = _head;
 
+            while (p.next != null)
+            {
+                if (p.next.data.CompareTo(item) == 0)
+                    return false;
+                if (p.next.data.CompareTo(item) > 0 && Sequence == MySortedSetSequence.SmallToBig
+                    || p.next.data.CompareTo(item) < 0 && Sequence == MySortedSetSequence.BigToSmall)
+                    p++;
+            }
+
+            p.next = new Node(item, p.next);
+            Count++;
+            return true;
         }
 
         public bool Contains(T item)
         {
-            throw new NotImplementedException();
+            foreach (var e in this)
+                if (e.Equals(item))
+                    return true;
+            return false;
         }
 
         public bool Remove(T item)
         {
-            throw new NotImplementedException();
+            Node p = _head;
+
+            while (p.next != null && !p.next.data.Equals(item))
+                p++;
+
+            if (p.next == null)
+                return false;
+
+            p.next = p.next.next;
+            return true;
         }
 
-        public bool Reverse(T item)
+        public void Reverse(T item)
         {
-            throw new NotImplementedException();
+            Node p = _head.next;
+            Node q = p.next;
+
+            p.next = null;
+
+            while (q != null)
+            {
+                p = q;
+                q = q.next;
+                p.next = _head.next;
+                _head.next = p;
+            }
         }
 
         /*
@@ -238,5 +315,11 @@ namespace MyGeneric
             return true;
         }
         */
+    }
+
+    enum MySortedSetSequence
+    {
+        SmallToBig,
+        BigToSmall
     }
 }
