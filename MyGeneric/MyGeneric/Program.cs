@@ -8,27 +8,33 @@ namespace MyGeneric
     {
         static int Main()
         {
-            MyStack<int> a = new MyStack<int>();
-            MySortedSet<int> b = new MySortedSet<int>();
-            a.Push(1);
-            a.Push(2);
-            a.Push(1);
-            b.Add(1);
-            b.Add(6);
-            b.Add(3);
-            Console.WriteLine(a.Pop());
-            Console.WriteLine(a.Pop());
-            Console.WriteLine(a.Pop());
-            Console.WriteLine(b[2]);
-            Console.WriteLine(b.Count);
-            b.Remove(1);
-            Console.WriteLine(b.Count);
-            b.Clear();
-            int[] f = new int[0];
-            Console.WriteLine(f.Length);
-            Stack<int> d;
-            d = null;
-            //Console.ReadKey();
+            MyStack<int> myStack = new MyStack<int>();
+            MySortedSet<int> mySortedSet = new MySortedSet<int>();
+
+            myStack.Push(1);
+            myStack.Push(2);
+            myStack.Push(1);
+            foreach (var e in myStack)
+                Console.WriteLine(e);
+            Console.WriteLine(myStack.Pop());
+            Console.WriteLine(myStack.Pop());
+            Console.WriteLine(myStack.Pop());
+            Console.WriteLine("Stack Test End");
+
+            mySortedSet.Add(1);
+            mySortedSet.Add(6);
+            mySortedSet.Add(3);
+
+            Console.WriteLine(mySortedSet[2]);
+            Console.WriteLine(mySortedSet.Count);
+            mySortedSet.Remove(1);
+            Console.WriteLine(mySortedSet.Count);
+            //mySortedSet.Clear();
+            Console.WriteLine("SortedSet Test End");
+
+
+
+            Console.ReadKey();
             return 0;
         }
     }
@@ -55,6 +61,7 @@ namespace MyGeneric
         public int Count => _top + 1; // 当前个数
         public void Clear() => _top = -1;
 
+        // TODO : 输出顺序应该反过来
         public IEnumerator<T> GetEnumerator() => _stack.GetEnumerator() as IEnumerator<T>;
         IEnumerator IEnumerable.GetEnumerator() => _stack.GetEnumerator();
 
@@ -98,14 +105,22 @@ namespace MyGeneric
             Capacity = capacity;
         }
 
-        public MyList(MyList<T> myList)
+        public MyList(MyList<T> myList, int capacity):this(capacity)
         {
-            throw new NotImplementedException();
+            foreach (var e in myList)
+                Add(e);
+            Count = myList.Count;
         }
+
+        public MyList(MyList<T> myList) : this(myList, myList.Capacity) { }
 
         public int Count { get; private set; }
         public int Capacity { get; }
-        public T this[int index] => _myList[index];
+        public T this[int index]
+        {
+            get => _myList[index];
+            set => _myList[index] = value;
+        }
 
         public IEnumerator<T> GetEnumerator() => _myList.GetEnumerator() as IEnumerator<T>;
         IEnumerator IEnumerable.GetEnumerator() => _myList.GetEnumerator();
@@ -114,10 +129,10 @@ namespace MyGeneric
 
         public bool Add(T item)
         {
-            T[] tempList = _myList;
-
             if (Count == Capacity)
                 throw new InvalidOperationException("列表已满！");
+
+            T[] tempList = _myList;
 
             if (Contains(item))
                 return false;
@@ -152,6 +167,7 @@ namespace MyGeneric
                 tempList[i] = _myList[i + j];
             }
             _myList = tempList;
+            Count--;
             return true;
         }
 
@@ -163,14 +179,32 @@ namespace MyGeneric
             return false;
         }
 
-        public bool RemoveAt(T item)
+        public bool RemoveAt(int index)
         {
-            throw new NotImplementedException();
+            if (index < 0 || index >= Capacity)
+                throw new ArgumentOutOfRangeException(nameof(index), "索引超过范围！");
+
+            T[] tempList = new T[Count - 1];
+            for (int i = 0, j = 0; i < Count - 1; i++)
+            {
+                if (i == index)
+                    j = 1;
+                tempList[i] = _myList[i + j];
+            }
+            _myList = tempList;
+            Count--;
+            return true;
         }
 
-        public bool Reverse(T item)
+        public void Reverse()
         {
-            throw new NotImplementedException();
+            T temp;
+            for (int i = 0; i < (Count - 1) / 2; i++)
+            {
+                temp = this[i];
+
+                this[Count - 1 - i] = temp;
+            }
         }
     }
 
@@ -208,8 +242,8 @@ namespace MyGeneric
 
         public int Count { get; private set; }
         public MySortedSetSequence Sequence { get; }
-        public T Max => Sequence == MySortedSetSequence.SmallToBig ? this[Count] : this[0];
-        public T Min => Sequence == MySortedSetSequence.SmallToBig ? this[0] : this[Count];
+        public T Max => Sequence == MySortedSetSequence.SmallToBig ? this[Count-1] : this[0];
+        public T Min => Sequence == MySortedSetSequence.SmallToBig ? this[0] : this[Count-1];
         public T this[int index]
         {
             get
@@ -245,9 +279,11 @@ namespace MyGeneric
             {
                 if (p.next.data.CompareTo(item) == 0)
                     return false;
-                if (p.next.data.CompareTo(item) > 0 && Sequence == MySortedSetSequence.SmallToBig
-                    || p.next.data.CompareTo(item) < 0 && Sequence == MySortedSetSequence.BigToSmall)
+                if (p.next.data.CompareTo(item) < 0 && Sequence == MySortedSetSequence.SmallToBig
+                    || p.next.data.CompareTo(item) > 0 && Sequence == MySortedSetSequence.BigToSmall)
                     p++;
+                else
+                    break;
             }
 
             p.next = new Node(item, p.next);
@@ -277,7 +313,7 @@ namespace MyGeneric
             return true;
         }
 
-        public void Reverse(T item)
+        public void Reverse()
         {
             Node p = _head.next;
             Node q = p.next;
