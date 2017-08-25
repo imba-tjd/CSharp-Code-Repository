@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("MyGeneric")]
+[assembly: AssemblyTitle("UnitTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("IMBA-TJD")]
-[assembly: AssemblyProduct("MyGeneric")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("UnitTest")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-[assembly: Guid("3d2cdd3f-5663-4e74-987f-1666a7034965")]
+[assembly: Guid("bff91849-400c-4ea2-837a-dec2cf75700b")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

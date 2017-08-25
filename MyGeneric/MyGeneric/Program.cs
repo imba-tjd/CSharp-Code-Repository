@@ -2,44 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace MyGeneric
+namespace ImbaTJD.MyGeneric
 {
-    class Program
-    {
-        static int Main()
-        {
-            MyStack<int> myStack = new MyStack<int>();
-            MySortedSet<int> mySortedSet = new MySortedSet<int>();
-
-            myStack.Push(1);
-            myStack.Push(2);
-            myStack.Push(1);
-            foreach (var e in myStack)
-                Console.WriteLine(e);
-            Console.WriteLine(myStack.Pop());
-            Console.WriteLine(myStack.Pop());
-            Console.WriteLine(myStack.Pop());
-            Console.WriteLine("Stack Test End");
-
-            mySortedSet.Add(1);
-            mySortedSet.Add(6);
-            mySortedSet.Add(3);
-
-            Console.WriteLine(mySortedSet[2]);
-            Console.WriteLine(mySortedSet.Count);
-            mySortedSet.Remove(1);
-            Console.WriteLine(mySortedSet.Count);
-            //mySortedSet.Clear();
-            Console.WriteLine("SortedSet Test End");
-
-
-
-            Console.ReadKey();
-            return 0;
-        }
-    }
-
-    class MyStack<T> : IEnumerable<T>, IReadOnlyCollection<T>
+    public class MyStack<T> : IEnumerable<T>, IReadOnlyCollection<T>
     {
         readonly T[] _stack;
         int _top = -1;
@@ -62,7 +27,7 @@ namespace MyGeneric
         public void Clear() => _top = -1;
 
         // TODO : 输出顺序应该反过来
-        public IEnumerator<T> GetEnumerator() => _stack.GetEnumerator() as IEnumerator<T>;
+        public IEnumerator<T> GetEnumerator() => (_stack as IEnumerable<T>).GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => _stack.GetEnumerator();
 
         public T Peek()
@@ -91,7 +56,7 @@ namespace MyGeneric
 
     }
 
-    class MyList<T> : IEnumerable<T>, IReadOnlyList<T>
+    public class MyList<T> : IEnumerable<T>, IReadOnlyList<T>
     {
         T[] _myList = new T[0]; // 数组使用时新建一个，不是创建对象时建立capacity大小的数组
 
@@ -105,7 +70,7 @@ namespace MyGeneric
             Capacity = capacity;
         }
 
-        public MyList(MyList<T> myList, int capacity):this(capacity)
+        public MyList(MyList<T> myList, int capacity) : this(capacity)
         {
             foreach (var e in myList)
                 Add(e);
@@ -122,7 +87,9 @@ namespace MyGeneric
             set => _myList[index] = value;
         }
 
-        public IEnumerator<T> GetEnumerator() => _myList.GetEnumerator() as IEnumerator<T>;
+        //泛型的GetEnumerator()如果返回(IEnumerator<T>)_myList.GetEnumerator()会报System.InvalidCastException：
+        //无法将类型为“SZArrayEnumerator”的对象强制转换为类型“System.Collections.Generic.IEnumerator`1[System.Int32]”。（或具体类型）
+        public IEnumerator<T> GetEnumerator() => (_myList as IEnumerable<T>).GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => _myList.GetEnumerator();
 
         public void Clear() => _myList = new T[0];
@@ -138,9 +105,13 @@ namespace MyGeneric
                 return false;
 
             if (Count == _myList.Length)
-                tempList = new T[Count + 4];
+            {
+                tempList = new T[Count + 8];
+                _myList.CopyTo(tempList, 0);
+            }
 
             tempList[Count++] = item;
+            _myList = tempList;
             return true;
         }
 
@@ -208,7 +179,7 @@ namespace MyGeneric
         }
     }
 
-    class MySortedSet<T> : IEnumerable<T>, IReadOnlyCollection<T> where T : IComparable<T>
+    public class MySortedSet<T> : IEnumerable<T>, IReadOnlyCollection<T> where T : IComparable<T>
     {
         Node _head;
 
@@ -242,8 +213,8 @@ namespace MyGeneric
 
         public int Count { get; private set; }
         public MySortedSetSequence Sequence { get; }
-        public T Max => Sequence == MySortedSetSequence.SmallToBig ? this[Count-1] : this[0];
-        public T Min => Sequence == MySortedSetSequence.SmallToBig ? this[0] : this[Count-1];
+        public T Max => Sequence == MySortedSetSequence.SmallToBig ? this[Count - 1] : this[0];
+        public T Min => Sequence == MySortedSetSequence.SmallToBig ? this[0] : this[Count - 1];
         public T this[int index]
         {
             get
@@ -259,7 +230,17 @@ namespace MyGeneric
 
         public void Clear() => _head.next = null;
 
-        public IEnumerator<T> GetEnumerator() => (this as IEnumerable).GetEnumerator() as IEnumerator<T>;
+        //public IEnumerator<T> GetEnumerator() => (this as IEnumerable<T>).GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            Node p = _head.next;
+
+            while (p != null)
+            {
+                yield return p.data;
+                p++;
+            }
+        }
         IEnumerator IEnumerable.GetEnumerator()
         {
             Node p = _head.next;
@@ -353,7 +334,7 @@ namespace MyGeneric
         */
     }
 
-    enum MySortedSetSequence
+    public enum MySortedSetSequence
     {
         SmallToBig,
         BigToSmall
