@@ -26,9 +26,8 @@ namespace ImbaTJD.MyGeneric.Tests
             Console.WriteLine("Stack Test Start");
 
             myStack.Push(1);
-            myStack.Push(2);
-            myStack.Push(1);
-            Console.WriteLine("Push End");
+            myStack.Push(6);
+            myStack.Push(3);
 
             foreach (var e in myStack)
                 Console.WriteLine(e);
@@ -54,7 +53,7 @@ namespace ImbaTJD.MyGeneric.Tests
             foreach (var e in mySortedSet)
                 Console.WriteLine(e);
 
-                Console.WriteLine(mySortedSet[2]);
+            Console.WriteLine(mySortedSet[2]);
             Console.WriteLine(mySortedSet.Count);
             mySortedSet.Remove(1);
             Console.WriteLine(mySortedSet.Count);
@@ -66,11 +65,20 @@ namespace ImbaTJD.MyGeneric.Tests
         [TestMethod]
         public void TestList()
         {
-            var myList = new MyList<int> { 1, 6, 3 };
+            var myList = new MyList<int?> { 1, 6, 3 };
 
             foreach (var e in myList)
                 Console.WriteLine(e);
 
+            myList.Add(null);
+            myList.Add(null);
+
+            Console.WriteLine(myList.Remove(null));
+            Console.WriteLine(myList.Remove(null));
+            Console.WriteLine(myList.Remove(null));
+
+            var a = new MyList<int?>();
+            myList.AddRange(a);
         }
     }
 
@@ -80,15 +88,7 @@ namespace ImbaTJD.MyGeneric.Tests
         [TestMethod]
         public void MyTestMethod()
         {
-            var stack = new System.Collections.Generic.Stack<int>();
-            stack.Push(1);
-            stack.Push(6);
-            stack.Push(3);
-
-            foreach (var e in stack)
-            {
-                Console.WriteLine(e);
-            }
+            var set = new System.Collections.Generic.SortedSet<int>() { 1, 6, 3 };
         }
     }
 }

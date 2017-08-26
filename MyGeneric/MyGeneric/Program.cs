@@ -26,9 +26,12 @@ namespace ImbaTJD.MyGeneric
         public int Count => _top + 1; // 当前个数
         public void Clear() => _top = -1;
 
-        // TODO : 输出顺序应该反过来
-        public IEnumerator<T> GetEnumerator() => (_stack as IEnumerable<T>).GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => _stack.GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = _top; i >= 0; i--)
+                yield return _stack[i];
+        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public T Peek()
         {
@@ -70,6 +73,9 @@ namespace ImbaTJD.MyGeneric
             Capacity = capacity;
         }
 
+        public MyList(IEnumerable<T> collection) : this() => AddRange(collection);
+
+        /*
         public MyList(MyList<T> myList, int capacity) : this(capacity)
         {
             foreach (var e in myList)
@@ -78,6 +84,7 @@ namespace ImbaTJD.MyGeneric
         }
 
         public MyList(MyList<T> myList) : this(myList, myList.Capacity) { }
+        */
 
         public int Count { get; private set; }
         public int Capacity { get; }
@@ -87,22 +94,24 @@ namespace ImbaTJD.MyGeneric
             set => _myList[index] = value;
         }
 
-        //泛型的GetEnumerator()如果返回(IEnumerator<T>)_myList.GetEnumerator()会报System.InvalidCastException：
-        //无法将类型为“SZArrayEnumerator”的对象强制转换为类型“System.Collections.Generic.IEnumerator`1[System.Int32]”。（或具体类型）
-        public IEnumerator<T> GetEnumerator() => (_myList as IEnumerable<T>).GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => _myList.GetEnumerator();
+        // 泛型的GetEnumerator()如果返回(IEnumerator<T>)_myList.GetEnumerator()会报System.InvalidCastException：
+        // 无法将类型为“SZArrayEnumerator”的对象强制转换为类型“System.Collections.Generic.IEnumerator`1[System.Int32]”。（或具体类型）
+        // 如果返回(_myList as IEnumerable<T>).GetEnumerator()，会把空的也输出了。
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+                yield return _myList[i];
+        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public void Clear() => _myList = new T[0];
 
-        public bool Add(T item)
+        public void Add(T item)
         {
             if (Count == Capacity)
                 throw new InvalidOperationException("列表已满！");
 
             T[] tempList = _myList;
-
-            if (Contains(item))
-                return false;
 
             if (Count == _myList.Length)
             {
@@ -112,13 +121,12 @@ namespace ImbaTJD.MyGeneric
 
             tempList[Count++] = item;
             _myList = tempList;
-            return true;
         }
 
-        public void AddRange(T[] collection)
+        public void AddRange(IEnumerable<T> collection)
         {
-            foreach (var e in collection)
-                Add(e);
+            foreach (var item in collection)
+                Add(item);
         }
 
         public bool Remove(T item)
@@ -126,7 +134,7 @@ namespace ImbaTJD.MyGeneric
             T[] tempList = new T[Count - 1];
 
             int itemi = -1;
-            for (int i = 0; i < Count - 1; i++)
+            for (int i = 0; i < Count; i++)
                 if (_myList[i].Equals(item)) { itemi = i; break; }
             if (itemi == -1)
                 return false;
@@ -150,7 +158,7 @@ namespace ImbaTJD.MyGeneric
             return false;
         }
 
-        public bool RemoveAt(int index)
+        public void RemoveAt(int index)
         {
             if (index < 0 || index >= Capacity)
                 throw new ArgumentOutOfRangeException(nameof(index), "索引超过范围！");
@@ -164,7 +172,6 @@ namespace ImbaTJD.MyGeneric
             }
             _myList = tempList;
             Count--;
-            return true;
         }
 
         public void Reverse()
@@ -172,9 +179,9 @@ namespace ImbaTJD.MyGeneric
             T temp;
             for (int i = 0; i < (Count - 1) / 2; i++)
             {
-                temp = this[i];
-
-                this[Count - 1 - i] = temp;
+                temp = _myList[i];
+                _myList[i] = _myList[Count - 1 - i];
+                _myList[Count - 1 - i] = temp;
             }
         }
     }
@@ -206,13 +213,14 @@ namespace ImbaTJD.MyGeneric
             Sequence = sequence;
         }
 
-        public MySortedSet(MySortedSet<T> mySortedSet)
+        public MySortedSet(IEnumerable<T> collection) : this()
         {
-            throw new NotImplementedException();
+            foreach (var item in collection)
+                Add(item);
         }
 
         public int Count { get; private set; }
-        public MySortedSetSequence Sequence { get; }
+        public MySortedSetSequence Sequence { get; private set; }
         public T Max => Sequence == MySortedSetSequence.SmallToBig ? this[Count - 1] : this[0];
         public T Min => Sequence == MySortedSetSequence.SmallToBig ? this[0] : this[Count - 1];
         public T this[int index]
@@ -230,7 +238,6 @@ namespace ImbaTJD.MyGeneric
 
         public void Clear() => _head.next = null;
 
-        //public IEnumerator<T> GetEnumerator() => (this as IEnumerable<T>).GetEnumerator();
         public IEnumerator<T> GetEnumerator()
         {
             Node p = _head.next;
@@ -241,16 +248,7 @@ namespace ImbaTJD.MyGeneric
                 p++;
             }
         }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            Node p = _head.next;
-
-            while (p != null)
-            {
-                yield return p.data;
-                p++;
-            }
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         public bool Add(T item)
         {
@@ -308,6 +306,8 @@ namespace ImbaTJD.MyGeneric
                 p.next = _head.next;
                 _head.next = p;
             }
+
+            Sequence = Sequence == MySortedSetSequence.SmallToBig ? MySortedSetSequence.BigToSmall : MySortedSetSequence.SmallToBig;
         }
 
         /*
