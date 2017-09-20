@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace ImbaTJD.MyGeneric
 {
+    /// <summary>
+    /// 一种先进后出的数据结构
+    /// </summary>
+    /// <typeparam name="T">指定栈中的元素类型</typeparam>
     public class MyStack<T> : IEnumerable<T>, IReadOnlyCollection<T>
     {
         readonly T[] _stack;
@@ -11,6 +15,10 @@ namespace ImbaTJD.MyGeneric
         bool _IsFull => _top == Capacity - 1;
         bool _IsEmpty => _top < 0;
 
+        /// <summary>
+        /// 创建栈的实例
+        /// </summary>
+        /// <param name="capacity">栈的大小</param>
         public MyStack(int capacity = 256)
         {
             if (capacity < 0)
@@ -22,10 +30,35 @@ namespace ImbaTJD.MyGeneric
             _stack = new T[capacity];
         }
 
-        public int Capacity { get; } // 最大容量
-        public int Count => _top + 1; // 当前个数
+        /// <summary>
+        /// 从集合复制元素来创建栈的实例
+        /// </summary>
+        /// <param name="collection">要复制的集合</param>
+        public MyStack(IEnumerable<T> collection):this()
+        {
+            foreach (var e in collection)
+                Push(e);
+        }
+
+        /// <summary>
+        /// 获取栈的最大容量
+        /// </summary>
+        public int Capacity { get; }
+
+        /// <summary>
+        /// 获取栈元素的个数
+        /// </summary>
+        public int Count => _top + 1;
+
+        /// <summary>
+        /// 清空栈
+        /// </summary>
         public void Clear() => _top = -1;
 
+        /// <summary>
+        /// 返回枚举器
+        /// </summary>
+        /// <returns>Stack<![CDATA[<T>]]>的枚举器</returns>
         public IEnumerator<T> GetEnumerator()
         {
             for (int i = _top; i >= 0; i--)
@@ -33,6 +66,10 @@ namespace ImbaTJD.MyGeneric
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        /// 查看栈顶的元素
+        /// </summary>
+        /// <returns>顶部的元素</returns>
         public T Peek()
         {
             if (_IsEmpty)
@@ -41,6 +78,10 @@ namespace ImbaTJD.MyGeneric
             return _stack[_top];
         }
 
+        /// <summary>
+        /// 从栈顶弹出一个元素
+        /// </summary>
+        /// <returns>顶部的元素</returns>
         public T Pop()
         {
             if (_IsEmpty)
@@ -49,6 +90,10 @@ namespace ImbaTJD.MyGeneric
             return _stack[_top--];
         }
 
+        /// <summary>
+        /// 把元素压入栈顶
+        /// </summary>
+        /// <param name="e"></param>
         public void Push(T e)
         {
             if (_IsFull)
@@ -59,10 +104,18 @@ namespace ImbaTJD.MyGeneric
 
     }
 
+    /// <summary>
+    /// 一种类似于加强型数组的数据结构
+    /// </summary>
+    /// <typeparam name="T">指定列表中的元素类型</typeparam>
     public class MyList<T> : IEnumerable<T>, IReadOnlyList<T>
     {
         T[] _myList = new T[0]; // 数组使用时新建一个，不是创建对象时建立capacity大小的数组
 
+        /// <summary>
+        /// 创建列表的实例
+        /// </summary>
+        /// <param name="capacity">列表的最大长度</param>
         public MyList(int capacity = 256)
         {
             if (capacity < 0)
@@ -73,6 +126,10 @@ namespace ImbaTJD.MyGeneric
             Capacity = capacity;
         }
 
+        /// <summary>
+        /// 从集合复制元素来创建列表的实例
+        /// </summary>
+        /// <param name="collection">要复制的集合</param>
         public MyList(IEnumerable<T> collection) : this() => AddRange(collection);
 
         /*
@@ -86,8 +143,21 @@ namespace ImbaTJD.MyGeneric
         public MyList(MyList<T> myList) : this(myList, myList.Capacity) { }
         */
 
+        /// <summary>
+        /// 获取列表元素的个数
+        /// </summary>
         public int Count { get; private set; }
+
+        /// <summary>
+        /// 获取列表的最大长度
+        /// </summary>
         public int Capacity { get; }
+
+        /// <summary>
+        /// 获取或设置指定索引处的元素
+        /// </summary>
+        /// <param name="index">从零开始的索引</param>
+        /// <returns>指定索引处的元素</returns>
         public T this[int index]
         {
             get => _myList[index];
@@ -97,6 +167,10 @@ namespace ImbaTJD.MyGeneric
         // 泛型的GetEnumerator()如果返回(IEnumerator<T>)_myList.GetEnumerator()会报System.InvalidCastException：
         // 无法将类型为“SZArrayEnumerator”的对象强制转换为类型“System.Collections.Generic.IEnumerator`1[System.Int32]”。（或具体类型）
         // 如果返回(_myList as IEnumerable<T>).GetEnumerator()，会把空的也输出了。
+        /// <summary>
+        /// 返回枚举器
+        /// </summary>
+        /// <returns>List<![CDATA[<T>]]>的枚举器</returns>
         public IEnumerator<T> GetEnumerator()
         {
             for (int i = 0; i < Count; i++)
@@ -104,8 +178,15 @@ namespace ImbaTJD.MyGeneric
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        /// 清空列表
+        /// </summary>
         public void Clear() => _myList = new T[0];
 
+        /// <summary>
+        /// 把元素添加到列表末尾
+        /// </summary>
+        /// <param name="item">要添加的元素</param>
         public void Add(T item)
         {
             if (Count == Capacity)
@@ -123,8 +204,14 @@ namespace ImbaTJD.MyGeneric
             _myList = tempList;
         }
 
+        /// <summary>
+        /// 把一个集合中的所有元素按顺序添加到列表末尾
+        /// </summary>
+        /// <param name="collection">要添加的元素来源的集合</param>
         public void AddRange(IEnumerable<T> collection)
         {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
             foreach (var item in collection)
                 Add(item);
         }
@@ -174,6 +261,9 @@ namespace ImbaTJD.MyGeneric
             Count--;
         }
 
+        /// <summary>
+        /// 将列表中的元素顺序反过来
+        /// </summary>
         public void Reverse()
         {
             T temp;
@@ -184,8 +274,18 @@ namespace ImbaTJD.MyGeneric
                 _myList[Count - 1 - i] = temp;
             }
         }
+
+        /// <summary>
+        /// 返回只读的列表
+        /// </summary>
+        /// <returns></returns>
+        public IReadOnlyList<T> AsReadOnly() => this as IReadOnlyList<T>;
     }
 
+    /// <summary>
+    /// 有序不重复集合
+    /// </summary>
+    /// <typeparam name="T">指定集合中的元素类型</typeparam>
     public class MySortedSet<T> : IEnumerable<T>, IReadOnlyCollection<T> where T : IComparable<T>
     {
         Node _head;

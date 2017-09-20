@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ImbaTJD.MyGeneric.Tests
@@ -79,6 +80,9 @@ namespace ImbaTJD.MyGeneric.Tests
 
             var a = new MyList<int?>();
             myList.AddRange(a);
+
+            MyList<int> b = null;
+            var c = new MyList<int>(b);
         }
     }
 
@@ -88,7 +92,10 @@ namespace ImbaTJD.MyGeneric.Tests
         [TestMethod]
         public void MyTestMethod()
         {
-            var set = new System.Collections.Generic.SortedSet<int>() { 1, 6, 3 };
+            var set = new SortedSet<int>() { 1, 6, 3 };
+            var stack = new Stack<int>();
+            var list = new List<int>();
+            
         }
     }
 }
