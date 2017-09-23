@@ -1,4 +1,4 @@
-﻿// 《写给大家看的面向对象编程书》
+// 《写给大家看的面向对象编程书》
 using System;
 using System.IO;
 using System.Xml;
