@@ -60,6 +60,16 @@ namespace XmlSerialization
         }
     }
 
+    /*  客户代码
+        获得用户信息
+        创建一个对象
+        设置属性
+        （将对象串行化为xml）
+        创建一个socket连接
+        创建输入流
+        写对象（将对象串行化至流）
+        关闭流
+    */
     public class Client
     {
         public static void Connect()
@@ -81,6 +91,15 @@ namespace XmlSerialization
         }
     }
 
+    /*  服务器代码
+        创建一个对象引用
+        监听虚拟端口11111
+        等待客户连接
+        创建输入/输出流
+        （）读取字节
+        读取对象（解串行化）
+        打印消息
+    */
     public class Server
     {
         public static void Listen()
