@@ -1,4 +1,6 @@
-﻿// Illustrated C# 2012
+// Illustrated C# 2012
+// public static <explicit 或 implicit> operator <目标类型> (<源类型> arg)
+
 namespace UserConversion
 {
     class Person

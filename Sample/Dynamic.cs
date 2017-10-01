@@ -1,4 +1,4 @@
-﻿// 《Learning Hard 学习笔记》代码
+// 《Learning Hard 学习笔记》代码
 // http://www.ituring.com.cn/book/1604
 /* 不能用来调用扩展方法。需用强制类型转换或者静态方法调用。
 委托与动态类型间不能做隐式转换。必须指定委托类型：dynamic rightlambda = (Func<int,int>)(x => x+1);

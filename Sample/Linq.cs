@@ -1,4 +1,4 @@
-﻿// 《Learning Hard 学习笔记》代码
+// 《Learning Hard 学习笔记》代码
 // http://www.ituring.com.cn/book/1604
 
 using System;
