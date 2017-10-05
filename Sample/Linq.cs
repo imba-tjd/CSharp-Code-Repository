@@ -8,6 +8,12 @@ using System.Text;
 
 namespace LinqtoObject
 {
+    class MyClass
+    {
+        public string Group;
+        public int Num;
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -20,6 +26,10 @@ namespace LinqtoObject
             }
             Console.WriteLine("使用Linq方法来对集合对象查询，查询结果为：");
             LinqQuery(inputArray);
+
+            LinqGroup();
+
+            Console.ReadKey();
         }
 
         // 使用Linq返回集合中为偶数的元素
@@ -33,6 +43,26 @@ namespace LinqtoObject
             foreach (var item in queryResults)
             {
                 Console.Write(item+"  ");
+            }
+        }
+        static void LinqGroup(void)
+        {
+            MyClass[] g = new MyClass[]
+            {
+                new MyClass() { Group = "A", Num = 0 },
+                new MyClass() { Group = "A", Num = 1 },
+                new MyClass() { Group = "B", Num = 0 },
+
+            };
+
+            var r = from e in g
+                    group e by e.Group;
+
+            foreach (var e in r)
+            {
+                Console.WriteLine(e.Key + ":");
+                foreach (var f in e)
+                    Console.WriteLine(f.Num);
             }
         }
     }

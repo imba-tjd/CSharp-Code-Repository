@@ -392,6 +392,8 @@ namespace ImbaTJD.MyGeneric
             return true;
         }
 
+        public int RemoveWhere(Predicate<T> match) => throw new NotImplementedException();
+
         public void Reverse()
         {
             Node p = _head.next;
