@@ -4,41 +4,38 @@ namespace ImbaTJD.MyTime
 {
     public struct MyTimeSpan
     {
-        public int Day { get; }
-        public int Hour { get; }
-        public int Minute { get; }
-        public int Second { get; }
+        int totalSeconds;
 
-        public MyTimeSpan(int second) : this() => Second = second;
+        public int Day => totalSeconds / (3600 * 24);
+        public int Hour => totalSeconds / 3600 % 24;
+        public int Minute => totalSeconds / 60 % 60;
+        public int Second => totalSeconds % 60;
+
+        public double TotalDays => TotalHours / 24;
+        public double TotalHours => TotalMinutes / 60;
+        public double TotalMinutes => TotalSeconds / 60;
+        public double TotalSeconds => totalSeconds;
+
+        public MyTimeSpan(int second) => totalSeconds = second;
         public MyTimeSpan(int hour, int minute, int second) : this(0, hour, minute, second) { }
-        public MyTimeSpan(int day, int hour, int minute, int second)
-        {
-            Day = day;
-            Hour = hour;
-            Minute = minute;
-            Second = second;
-        }
+        public MyTimeSpan(int day, int hour, int minute, int second) =>
+            totalSeconds = (((day * 24) + hour) * 60 + minute) * 60 + second;
 
-        public double TotalDays => 365 * Year + 12 * Month + Day;
-        public double TotalHours => TotalDays * 24 + Hour;
-        public double TotalMinutes => TotalHours * 60 + Minute;
-        public int TotalSeconds => TotalMinutes * 60 + Second;
+        public static MyTimeSpan operator +(MyTimeSpan ts1, MyTimeSpan ts2) => new MyTimeSpan(ts1.Second + ts2.Second);
+        public static MyTimeSpan operator -(MyTimeSpan ts1, MyTimeSpan ts2) => new MyTimeSpan(ts1.Second - ts2.Second);
+        public static bool operator ==(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.totalSeconds == ts2.totalSeconds;
+        public static bool operator !=(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.totalSeconds != ts2.totalSeconds;
+        public static bool operator >(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.totalSeconds > ts2.totalSeconds;
+        public static bool operator <(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.totalSeconds < ts2.totalSeconds;
+        public static bool operator >=(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.totalSeconds >= ts2.totalSeconds;
+        public static bool operator <=(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.totalSeconds <= ts2.totalSeconds;
 
-        public static MyTimeSpan operator +(MyTimeSpan ts1, MyTimeSpan ts2) => new MyTimeSpan(
-            ts1.Year + ts2.Year, ts1.Minute + ts2.Minute, ts1.Day + ts2.Day,
-            ts1.Hour + ts2.Hour, ts1.Minute + ts2.Minute, ts1.Second + ts2.Second);
-        public static MyTimeSpan operator -(MyTimeSpan ts1, MyTimeSpan ts2) => new MyTimeSpan(
-            ts1.Year - ts2.Year, ts1.Minute - ts2.Minute, ts1.Day - ts2.Day,
-            ts1.Hour - ts2.Hour, ts1.Minute - ts2.Minute, ts1.Second - ts2.Second);
-        public static bool operator ==(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.TotalSeconds == ts2.TotalSeconds;
-        public static bool operator !=(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.TotalSeconds != ts2.TotalSeconds;
-        public static bool operator >(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.TotalSeconds > ts2.TotalSeconds;
-        public static bool operator <(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.TotalSeconds < ts2.TotalSeconds;
-        public static bool operator >=(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.TotalSeconds >= ts2.TotalSeconds;
-        public static bool operator <=(MyTimeSpan ts1, MyTimeSpan ts2) => ts1.TotalSeconds <= ts2.TotalSeconds;
-
-
-
+        /*
+        public int Day => (int)TotalDays;
+        public int Hour => (int)TotalHours % 24;
+        public int Minute => (int)TotalMinutes % 60;
+        public int Second => (int)TotalSeconds % 60;
+        */
     }
 
     public struct MyDateTime
