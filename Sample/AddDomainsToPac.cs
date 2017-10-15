@@ -23,7 +23,7 @@ namespace AddDomainsToPac
 
         sb.AppendLine(tr.ReadLine());
         foreach (var arg in args)
-            sb.AppendLine(string.Format("  \"{0}\": 1,", arg).TrimEnd());
+            sb.AppendLine(string.Format("  \"{0}\": 1,", arg.Trim()));
         sb.Append(tr.ReadToEnd());
 
         tr.Dispose();
