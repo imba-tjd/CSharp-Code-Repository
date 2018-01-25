@@ -47,7 +47,8 @@ namespace AddDomainsToPac
                 if ((end = targ.IndexOf('/')) != -1) // 寻找去掉协议后的第一个 '/'
                     targ = targ.Substring(0, end); // 第二个参数是个数而不是索引，而end是索引，根据不对称原理恰好为end个，targ[end]及之后内容会被去掉。
 
-                sb.AppendLine(string.Format("  \"{0}\": 1,", targ));
+                if(targ!="")
+                    sb.AppendLine(string.Format("  \"{0}\": 1,", targ));
             }
 
             sb.Append(tr.ReadToEnd()); // 把剩下的内容读入缓冲区
