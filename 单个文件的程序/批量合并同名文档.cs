@@ -9,10 +9,10 @@ namespace Dotnet1
 {
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
             Directory.GetFiles(
-                Environment.CurrentDirectory, "*.txt", SearchOption.AllDirectories
+                args?[1] ?? Environment.CurrentDirectory, "*.txt", SearchOption.AllDirectories
                 ).GroupBy(
                     x => Path.GetFileName(x)
                     ).AsParallel().ForAll(
@@ -22,7 +22,8 @@ namespace Dotnet1
                             foreach (var item in x)
                                 using (TextReader tr = new StreamReader(item))
                                 {
-                                    sb.AppendLine(tr.ReadToEnd() + Environment.NewLine);
+                                    sb.AppendLine(tr.ReadToEnd());
+                                    sb.AppendLine();
                                 }
                             using (TextWriter tw = new StreamWriter(x.Key))
                             {
