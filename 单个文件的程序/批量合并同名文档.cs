@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Linq;
 
-namespace Dotnet1
+namespace DotNet
 {
     class Program
     {
@@ -20,15 +20,19 @@ namespace Dotnet1
                         {
                             StringBuilder sb = new StringBuilder();
                             foreach (var item in x)
-                                using (TextReader tr = new StreamReader(item))
-                                {
-                                    sb.AppendLine(tr.ReadToEnd());
-                                    sb.AppendLine();
-                                }
-                            using (TextWriter tw = new StreamWriter(x.Key))
-                            {
-                                tw.Write(sb.ToString());
-                            }
+                                sb.AppendLine(File.ReadAllText(item) + Environment.NewLine);
+                            File.WriteAllText(x.Key, sb.ToString());
+
+                            // foreach (var item in x)
+                            //     using (TextReader tr = new StreamReader(item))
+                            //     {
+                            //         sb.AppendLine(tr.ReadToEnd());
+                            //         sb.AppendLine();
+                            //     }
+                            // using (TextWriter tw = new StreamWriter(x.Key))
+                            // {
+                            //     tw.Write(sb.ToString());
+                            // }
                         }
                         );
         }
