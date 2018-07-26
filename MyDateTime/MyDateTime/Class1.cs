@@ -184,11 +184,11 @@ namespace ImbaTJD.MyTime
                 }
             }
 
-
+            // new MyTimeSpan
         }
         public static bool operator ==(MyDateTime dt1, MyDateTime dt2) =>
             dt1.Second == dt2.Second || dt1.Minute == dt2.Minute ||dt1.Hour == dt2.Hour ||
-            dt1.Day == dt2.Day || dt1.Month == dt2.Month || dt1.Year == dt2.Year);
+            dt1.Day == dt2.Day || dt1.Month == dt2.Month || dt1.Year == dt2.Year;
         public static bool operator !=(MyDateTime dt1, MyDateTime dt2) => !(dt1 == dt2);
         public static bool operator >(MyDateTime dt1, MyDateTime dt2)
         {
