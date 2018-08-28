@@ -9,7 +9,7 @@ public class Renaming
         if (args.Length == 0)
         {
             Console.WriteLine("本程序可以将指定文件夹下的所有jpg重命名为“文件夹名+序号.jpg”。");
-            Console.WriteLine("允许一次输入多个文件夹，以空格分隔。路径最好用引号括起来。")
+            Console.WriteLine("允许一次输入多个文件夹，以空格分隔。路径最好用引号括起来。");
             Console.Write("请输入文件夹路径：");
             args = Console.ReadLine().Split(new[] { ' ', '\t', }, StringSplitOptions.RemoveEmptyEntries);
         }
