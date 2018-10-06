@@ -89,11 +89,11 @@ namespace IMBA_TJD.TrieTree
             if (this.depth < word.Length)
                 return false;
             else
-                return CachedMatch(word, out string a, out TrieTreeNode b);
+                return CachedMatch(word, out _, out _);
         }
         public int PrefixMatch(string word) // returns unmatched position.
         {
-            CachedMatch(word, out string unmatchedWords, out TrieTreeNode b);
+            CachedMatch(word, out string unmatchedWords, out _);
             return word.Length - unmatchedWords.Length + 1; // unmatchedWords的长度算了'\0'而这里的word没有，所以需要+1
         }
 
