@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 class UH
 {
     const string ADDR = "https://raw.githubusercontent.com/googlehosts/hosts/master/hosts-files/hosts-compact-no-sni-rst";
+    const string ADDR_MIRROR = "https://coding.net/u/scaffrey/p/hosts/git/raw/master/hosts-files/hosts-compact-no-sni-rst";
     const string HOSTSPATH = @"C:\Windows\System32\drivers\etc\hosts";
+
     bool DEBUG => true; // 未来如果支持了命令行选项，可以改成可修改的
+    bool UseMirror { get; set; } = false;
 
     // 以静态构造函数做兼容Win7的配置
     static UH() => System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
@@ -18,9 +21,15 @@ class UH
         if (Environment.OSVersion.Platform != PlatformID.Win32NT)
             throw new PlatformNotSupportedException("This program only supports Windows.");
 
+        if (!CanConnect(ADDR))
+        {  // 其实更好的方式是手动指定IP，然而C#不支持；要不就域前置，用IP连，改HOST，但又会有安全问题
+            Log("Cannot connect to GitHub src, trying mirror...");
+            UseMirror = true;
+        }
+
         // 开始下载
         Log("Start downloading.");
-        var newHOSTS = new HttpClient() { Timeout = TimeSpan.FromSeconds(15) }.GetStringAsync(ADDR);
+        var newHOSTS = new HttpClient() { Timeout = TimeSpan.FromSeconds(15) }.GetStringAsync(UseMirror ? ADDR_MIRROR : ADDR);
 
         FileInfo HOSTS = new FileInfo(HOSTSPATH);
         if (!HOSTS.Exists)
@@ -90,5 +99,26 @@ class UH
     {
         if (this.DEBUG)
             Console.WriteLine(message);
+    }
+
+    // 然而raw.githubusercontent.comb不让ping；而且现在Windows不让往Raw Socket发TCP包了
+    bool Ping(string host) => new System.Net.NetworkInformation.Ping()
+        .SendPingAsync(host, 2).GetAwaiter().GetResult() // 默认超时是5秒
+        .Status == System.Net.NetworkInformation.IPStatus.Success;
+
+    // 试一下老的连接方式
+    static bool CanConnect(string url)
+    {
+        if (!url.StartsWith("http"))
+            url = "http://" + url;
+        var req = System.Net.HttpWebRequest.CreateHttp(url);
+        req.Method = "HEAD";
+        req.Proxy = System.Net.GlobalProxySelection.GetEmptyWebProxy(); // Deprecated了，但推荐的方式是个全局的属性
+        req.Timeout = 5000;
+        req.KeepAlive = false;
+        var rsp = req.GetResponse() as System.Net.HttpWebResponse; // 有async方法但已经这样了就无所谓了
+        var sc = rsp.StatusCode;
+        rsp.Close();
+        return sc == System.Net.HttpStatusCode.OK;
     }
 }
