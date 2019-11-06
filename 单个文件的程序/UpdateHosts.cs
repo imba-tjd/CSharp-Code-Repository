@@ -1,3 +1,4 @@
+// 编译：csc ./UpdateHosts.cs /r:system.net.http.dll /o+
 using System;
 using System.IO;
 using System.Net.Http;
@@ -11,9 +12,16 @@ class UH
 
     bool DEBUG => true; // 未来如果支持了命令行选项，可以改成可修改的
     bool UseMirror { get; set; } = false;
+    static HttpClient HC { get; set; }
 
     // 以静态构造函数做兼容Win7的配置
-    static UH() => System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
+    static UH()
+    {
+        System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12;
+        var hch = new HttpClientHandler() { AutomaticDecompression = System.Net.DecompressionMethods.GZip };
+        HC = new HttpClient(hch) { Timeout = TimeSpan.FromSeconds(15) };
+        HC.DefaultRequestHeaders.UserAgent.ParseAdd("curl");
+    }
     static async Task Main() => await new UH().Run();
 
     async Task Run()
@@ -29,7 +37,9 @@ class UH
 
         // 开始下载
         Log("Start downloading.");
-        var newHOSTS = new HttpClient() { Timeout = TimeSpan.FromSeconds(15) }.GetStringAsync(UseMirror ? ADDR_MIRROR : ADDR);
+        string addr = UseMirror ? ADDR_MIRROR : ADDR;
+        var newHOSTS = HC.GetStreamAsync(addr);
+        // var newHOSTS = HC.GetStringAsync(addr);
 
         FileInfo HOSTS = new FileInfo(HOSTSPATH);
         if (!HOSTS.Exists)
@@ -50,6 +60,7 @@ class UH
 
         // 如果下载失败，不应该写文件，所以放在任何写入的前面
         var downloaded = await newHOSTS;
+        // Log($"Content length: {downloaded.Length}"); // 未来可以加个计时的功能；GZipStream不支持获取长度，之前的string是可以的
         Log("End downloading.");
 
         // 备份
@@ -62,7 +73,10 @@ class UH
         using (var writer = HOSTS.CreateText())
         {
             await writer.WriteAsync(customContent.ToString());
-            await writer.WriteAsync(downloaded);
+            // await writer.WriteAsync(downloaded); // GetStringAsync时用的代码
+            await writer.FlushAsync();
+            await downloaded.CopyToAsync(writer.BaseStream);
+            await writer.BaseStream.FlushAsync();
         }
         Log("End writing new hosts.");
     }
@@ -116,7 +130,15 @@ class UH
         req.Proxy = System.Net.GlobalProxySelection.GetEmptyWebProxy(); // Deprecated了，但推荐的方式是个全局的属性
         req.Timeout = 5000;
         req.KeepAlive = false;
-        var rsp = req.GetResponse() as System.Net.HttpWebResponse; // 有async方法但已经这样了就无所谓了
+        System.Net.HttpWebResponse rsp;
+        try
+        {
+            rsp = req.GetResponse() as System.Net.HttpWebResponse; // 有async方法但已经这样了就无所谓了
+        }
+        catch (System.Net.WebException)
+        {
+            return false;
+        }
         var sc = rsp.StatusCode;
         rsp.Close();
         return sc == System.Net.HttpStatusCode.OK;
