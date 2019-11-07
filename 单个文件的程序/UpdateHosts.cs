@@ -12,7 +12,7 @@ class UH
 
     bool DEBUG => true; // 未来如果支持了命令行选项，可以改成可修改的
     bool UseMirror { get; set; } = false;
-    static HttpClient HC { get; set; }
+    static HttpClient HC { get; } // 相当于不用属性的readonly
 
     // 以静态构造函数做兼容Win7的配置
     static UH()
