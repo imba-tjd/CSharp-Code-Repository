@@ -13,11 +13,19 @@ class SNI
 #if DEBUG
         args = new[] { "www.bbc.com" };
 #endif
-        if (args.Length != 1)
-            throw new ArgumentException("Expect one and only one url.");
+        try
+        {
+            if (args.Length != 1)
+                throw new ArgumentException("Expect one and only one url.");
 
-        string host = new UriBuilder(args[0]).Host;
-        return new SNI().Run(host);
+            string host = new UriBuilder(args[0]).Host;
+            return new SNI().Run(host);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            return -1;
+        }
     }
 
     int Run(string requestedHost) =>
