@@ -1,3 +1,4 @@
+// 检测是否存在SNI RST的程序，接受单个IP、域名或整个URL
 using System;
 using System.Diagnostics;
 
@@ -21,26 +22,28 @@ class SNI
 
     int Run(string requestedHost) =>
         PingFailed(NormalCNHost) ? Log("Check your internet connection.", 3) :
-        HasSniRst(NormalNCNHost) ? Log("Cannot connect to target IP.", 2) :
+        CheckTimeout(NormalNCNHost) ? Log("Cannot connect to target IP.", 2) :
         HasSniRst(requestedHost) ? Log("Has SNI RST.", 1) :
-        Log("Not SNI RST.", 0);
+        Log("No SNI RST.", 0);
 
-    bool HasSniRst(string host)
+    string Curl(string host)
     {
-        var psi = new ProcessStartInfo("curl", $"-I -sS --resolve {host}:443:{TargetIP} https://{host}")
+        var psi = new ProcessStartInfo("curl", $"-I -sS --connect-timeout 1 --resolve {host}:443:{TargetIP} https://{host}")
         { UseShellExecute = false, RedirectStandardError = true };
 
         var p = Process.Start(psi);
         p.WaitForExit();
 
-        string result = p.StandardError.ReadToEnd();
-        return result.Contains("failed to receive handshake"); // 为false时并不意味着就没有SNI RST了
+        return p.StandardError.ReadToEnd();
     }
+
+    bool HasSniRst(string host) => Curl(host).Contains("failed to receive handshake"); // 充分不必要
+    bool CheckTimeout(string host) => Curl(host).Contains("Connection timed out"); // 自然超时用的是 port 443: Timed out
 
     bool PingFailed(string host)
     {
         var p = Process.Start(
-            new ProcessStartInfo("ping", $"-{GetParam()} 2 {host}")
+            new ProcessStartInfo("ping", $"-{GetParam()} 1 {host}")
             { UseShellExecute = false, RedirectStandardError = true, RedirectStandardOutput = true }
         );
         p.WaitForExit();
@@ -55,5 +58,11 @@ class SNI
     {
         Console.WriteLine(message);
         return returncode;
+    }
+    // 未来加上命令行选项可以在Debug下用这个记录运行的命令，还要想办法记录输出
+    string Log(string message)
+    {
+        Console.WriteLine(message);
+        return message;
     }
 }
