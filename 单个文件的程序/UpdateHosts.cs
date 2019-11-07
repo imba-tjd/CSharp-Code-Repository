@@ -1,4 +1,4 @@
-// 编译：csc ./UpdateHosts.cs /r:system.net.http.dll /o+
+// 编译：csc ./UpdateHosts.cs /r:system.net.http.dll /o
 using System;
 using System.IO;
 using System.Net.Http;
@@ -127,7 +127,7 @@ class UH
             url = "http://" + url;
         var req = System.Net.HttpWebRequest.CreateHttp(url);
         req.Method = "HEAD";
-        req.Proxy = System.Net.GlobalProxySelection.GetEmptyWebProxy(); // Deprecated了，但推荐的方式是个全局的属性
+        req.Proxy = null; // 文档说为null会抛异常，然而现在并不会
         req.Timeout = 5000;
         req.KeepAlive = false;
         System.Net.HttpWebResponse rsp;
