@@ -23,7 +23,10 @@ class SNI
         }
         catch (Exception ex)
         {
+            var color = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(ex);
+            Console.ForegroundColor = color;
             return -1;
         }
     }
@@ -64,10 +67,14 @@ class SNI
     // 为了能在Run用三元表达式
     int Log(string message, int returncode)
     {
+        var color = Console.ForegroundColor;
+        if (returncode == 1)
+            Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(message);
+        Console.ForegroundColor = color;
         return returncode;
     }
-    // 未来加上命令行选项可以在Debug下用这个记录运行的命令，还要想办法记录输出
+    // 未来加上命令行选项可以在Debug下用这个记录要运行的外部程序，它们的输出也要处理但不是在这个函数里
     string Log(string message)
     {
         Console.WriteLine(message);
