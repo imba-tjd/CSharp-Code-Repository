@@ -72,6 +72,7 @@ class UH
         Log("Start writing new hosts.");
         using (var writer = HOSTS.CreateText())
         {
+            writer.BaseStream.Write(System.Text.Encoding.UTF8.GetPreamble(), 0, 3); // Win下没有BOM可能导致行尾注释有中文时该行失效；必须取BaseStream否则会被二次编码
             await writer.WriteAsync(customContent.ToString());
             // await writer.WriteAsync(downloaded); // GetStringAsync时用的代码
             await writer.FlushAsync();
