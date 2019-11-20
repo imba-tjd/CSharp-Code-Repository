@@ -18,6 +18,6 @@ class PingT
             url = "http://" + url;
         string host = new Uri(url).Host;
 
-        Process.Start(new ProcessStartInfo("tcping", $"-n 8 {host} 443") { UseShellExecute = false }).WaitForExit();
+        Process.Start(new ProcessStartInfo("cmd", $"/C tcping -n 8 {host} 443") { UseShellExecute = false }).WaitForExit();
     }
 }
