@@ -29,14 +29,14 @@ class UH
         if (Environment.OSVersion.Platform != PlatformID.Win32NT)
             throw new PlatformNotSupportedException("This program only supports Windows.");
 
-        if (!CanConnect(ADDR))
+        if (!Helper.CanConnect(ADDR))
         {  // 其实更好的方式是手动指定IP，然而C#不支持；要不就域前置，用IP连，改HOST，但又会有安全问题
-            Log("Cannot connect to GitHub src, trying mirror...");
+            Helper.Log("Cannot connect to GitHub src, trying mirror...");
             UseMirror = true;
         }
 
         // 开始下载
-        Log("Start downloading.");
+        Helper.Log("Start downloading.");
         string addr = UseMirror ? ADDR_MIRROR : ADDR;
         var newHOSTS = HC.GetStreamAsync(addr);
         // var newHOSTS = HC.GetStringAsync(addr);
@@ -46,7 +46,7 @@ class UH
             HOSTS.Create(); // 如果权限不够，现在会直接失败
 
         // 读取自定义的HOSTS，只会读取开头的部分
-        Log("Start reading current custom hosts.");
+        Helper.Log("Start reading current custom hosts.");
         var customContent = new System.Text.StringBuilder();
         using (var reader = new StreamReader(HOSTS.OpenRead())) // reader关闭时也会关闭流
             while (true)
@@ -56,20 +56,20 @@ class UH
                     break;
                 customContent.AppendLine(line);
             }
-        Log("End reading current custom hosts.");
+        Helper.Log("End reading current custom hosts.");
 
         // 如果下载失败，不应该写文件，所以放在任何写入的前面
         var downloaded = await newHOSTS;
-        // Log($"Content length: {downloaded.Length}"); // 未来可以加个计时的功能；GZipStream不支持获取长度，之前的string是可以的
-        Log("End downloading.");
+        // Helper.Log($"Content length: {downloaded.Length}"); // 未来可以加个计时的功能；GZipStream不支持获取长度，之前的string是可以的
+        Helper.Log("End downloading.");
 
         // 备份
-        Log("Start backupping.");
+        Helper.Log("Start backupping.");
         BackUp(HOSTS);
-        Log("End backupping.");
+        Helper.Log("End backupping.");
 
         // 写入自定义和新的HOSTS
-        Log("Start writing new hosts.");
+        Helper.Log("Start writing new hosts.");
         using (var writer = HOSTS.CreateText())
         {
             writer.BaseStream.Write(System.Text.Encoding.UTF8.GetPreamble(), 0, 3); // Win下没有BOM可能导致行尾注释有中文时该行失效；必须取BaseStream否则会被二次编码
@@ -79,7 +79,7 @@ class UH
             await downloaded.CopyToAsync(writer.BaseStream);
             await writer.BaseStream.FlushAsync();
         }
-        Log("End writing new hosts.");
+        Helper.Log("End writing new hosts.");
     }
 
     void BackUp(FileInfo f)
@@ -96,7 +96,7 @@ class UH
         catch (UnauthorizedAccessException)
         {
             // 其实3.0之后FileInfo支持Get/SetAccessControl()且无需package了，但看起来有点复杂
-            Log("Applying UAC to modify the privilage.");
+            Helper.Log("Applying UAC to modify the privilage.");
             RunCMD($"copy /Y \"{f.FullName}\" \"{target}\" &&" +
                     $"cacls \"{f.FullName}\" /E /G Users:W &&" +
                     $"cacls \"{target}\" /E /G Users:W");
@@ -109,20 +109,23 @@ class UH
                 { Verb = "runas", UseShellExecute = true, CreateNoWindow = true }
             ).WaitForExit();
     }
+}
 
-    void Log(string message)
+static class Helper
+{
+    public static void Log(string message)
     {
-        if (this.DEBUG)
-            Console.WriteLine(message);
+        // if (this.DEBUG)
+        Console.WriteLine(message);
     }
 
     // 然而raw.githubusercontent.comb不让ping；而且现在Windows不让往Raw Socket发TCP包了
-    bool Ping(string host) => new System.Net.NetworkInformation.Ping()
+    public static bool Ping(string host) => new System.Net.NetworkInformation.Ping()
         .SendPingAsync(host, 2).GetAwaiter().GetResult() // 默认超时是5秒
         .Status == System.Net.NetworkInformation.IPStatus.Success;
 
     // 试一下老的连接方式
-    static bool CanConnect(string url)
+    public static bool CanConnect(string url)
     {
         if (!url.StartsWith("http"))
             url = "http://" + url;
