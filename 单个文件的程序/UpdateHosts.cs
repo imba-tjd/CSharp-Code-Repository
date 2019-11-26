@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 class UH
 {
@@ -49,7 +50,7 @@ class UH
         Helper.Log("Start reading current custom hosts.");
         var customContent = new System.Text.StringBuilder();
         using (var reader = new StreamReader(HOSTS.OpenRead())) // reader关闭时也会关闭流
-            while (true)
+            while (!reader.EndOfStream)
             {
                 string line = reader.ReadLine();
                 if (line.StartsWith("# Copyright (c) 2017"))
@@ -76,8 +77,8 @@ class UH
             await writer.WriteAsync(customContent.ToString());
             // await writer.WriteAsync(downloaded); // GetStringAsync时用的代码
             await writer.FlushAsync();
-            await downloaded.CopyToAsync(writer.BaseStream);
-            await writer.BaseStream.FlushAsync();
+            // await downloaded.CopyToAsync(writer.BaseStream); // 直接写入流的数据时用的代码
+            await SplitEveryNineItemsToStream(downloaded).CopyToAsync(writer.BaseStream);
         }
         Helper.Log("End writing new hosts.");
     }
@@ -108,6 +109,54 @@ class UH
                 new System.Diagnostics.ProcessStartInfo("cmd.exe", "/C " + command)
                 { Verb = "runas", UseShellExecute = true, CreateNoWindow = true }
             ).WaitForExit();
+    }
+
+    // 下一个函数的简单包装，这样会大量消耗内存，但感觉还是比直接循环往文件里写要好一点。实际会消耗不到600KB
+    Stream SplitEveryNineItemsToStream(Stream strm)
+    {
+        var ms = new MemoryStream(600*1024);
+        var writer = new StreamWriter(ms);
+        foreach (var item in SplitEveryNineItems(strm))
+            writer.WriteLine(item); // 这一步会导致LF变成CRLF
+        writer.Flush();
+        ms.Position = 0;
+        return ms;
+    }
+
+    // 用于修复Windows的BUG；现在程序暂时只支持Win，前面的逻辑就不做判断了
+    IEnumerable<string> SplitEveryNineItems(Stream strm)
+    {
+        using (var reader = new StreamReader(strm))
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                if (line.StartsWith("#"))
+                    yield return line;
+                else
+                    foreach (var item in SplitEveryNineItems(line))
+                        yield return item;
+            }
+    }
+
+    // 每超过9个域名会多分一行。此代码没有处理行尾注释
+    IEnumerable<string> SplitEveryNineItems(string line)
+    {
+        string[] entries = line.Split();
+        if (entries.Length <= 10)
+        {
+            yield return line;
+            yield break;
+        }
+
+        string ip = entries[0];
+        for (int i = 1; i < entries.Length; i += 9) // 测试用例：长度为2、10、11
+            yield return ip + "\t" + string.Join(" ", GetNineItems(entries, i));
+
+        IEnumerable<string> GetNineItems(string[] arr, int starti)
+        {
+            for (int i = starti; i < starti + 9 && i < arr.Length; i++)
+                yield return arr[i];
+        }
     }
 }
 
