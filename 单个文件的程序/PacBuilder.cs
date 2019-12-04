@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 class PacBuilder
@@ -44,6 +45,16 @@ function FindProxyForURL(url, host) {
             if (File.Exists("pac.txt"))
                 File.Copy("pac.txt", "pac.txt.bak", true);
             File.WriteAllText("pac.txt", blackList + whiteList + FINDPROXYMINIFY);
+
+            var ps = Process.Start("node.exe pac.txt");
+            ps.WaitForExit();
+            if (ps.ExitCode != 0)
+                throw new Exception("Validation failed.");
+
+        }
+        catch(System.ComponentModel.Win32Exception)
+        {
+            Console.WriteLine("Node isn't installed. Skip checking.");
         }
         catch (Exception ex)
         {
