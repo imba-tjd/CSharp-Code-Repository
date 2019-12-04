@@ -16,7 +16,12 @@ class SNI
         try
         {
             if (args.Length != 1)
+            {
+                Console.WriteLine("Usage: sni.exe [url]");
+                if (args.Length == 0)
+                    return 0;
                 throw new ArgumentException("Expect one and only one url.");
+            }
 
             string host = new UriBuilder(args[0]).Host;
             return new SNI().Run(host);

@@ -23,7 +23,21 @@ class UH
         HC = new HttpClient(hch) { Timeout = TimeSpan.FromSeconds(15) };
         HC.DefaultRequestHeaders.UserAgent.ParseAdd("curl");
     }
-    static async Task Main() => await new UH().Run();
+    static async Task Main()
+    {
+        try
+        {
+            await new UH().Run();
+        }
+        catch (Exception ex)
+        {
+            var color = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex);
+            Console.ForegroundColor = color;
+            Console.ReadKey();
+        }
+    }
 
     async Task Run()
     {
@@ -114,7 +128,7 @@ class UH
     // 下一个函数的简单包装，这样会大量消耗内存，但感觉还是比直接循环往文件里写要好一点。实际会消耗不到600KB
     Stream SplitEveryNineItemsToStream(Stream strm)
     {
-        var ms = new MemoryStream(600*1024);
+        var ms = new MemoryStream(600 * 1024);
         var writer = new StreamWriter(ms);
         foreach (var item in SplitEveryNineItems(strm))
             writer.WriteLine(item); // 这一步会导致LF变成CRLF
