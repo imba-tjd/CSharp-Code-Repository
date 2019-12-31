@@ -12,7 +12,7 @@ class PingT
             Environment.Exit(1);
         }
 
-        // 无论输入主机还是网址都能运行，后者会自动提取出主机，；但为了使用Uri，又要当输入前者时加上协议
+        // 无论输入主机还是网址都能运行，后者会自动提取出主机；但为了使用Uri，又要当输入前者时加上协议
         string url = args[0].Trim();
         if (!url.StartsWith("http"))
             url = "http://" + url;
