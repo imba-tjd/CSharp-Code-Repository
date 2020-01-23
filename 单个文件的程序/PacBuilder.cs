@@ -11,6 +11,8 @@ class PacBuilder
 var proxy = '__PROXY__';
 var direct = 'DIRECT;';
 var hop = Object.hasOwnProperty;
+if (proxy === '__PRO'+'XY__')
+    proxy = eval('__PRO'+'XY__');
 
 function FindProxyForURL(url, host) {
     if(hop.call(whitelist, host))
@@ -32,7 +34,7 @@ function FindProxyForURL(url, host) {
         pos = host.lastIndexOf('.', pos - 1);
     }
 }";
-    const string FINDPROXYMINIFY = "var proxy='__PROXY__',direct='DIRECT;',hop=Object.hasOwnProperty;function FindProxyForURL(r,t){if(hop.call(whitelist,t))return direct;var l,i=t.lastIndexOf('.');for(i=t.lastIndexOf('.',i-1);;){if(i<=0)return hop.call(blacklist,t)?proxy:direct;if(l=t.substring(i+1),hop.call(blacklist,l))return proxy;i=t.lastIndexOf('.',i-1)}}";
+    const string FINDPROXYMINIFY = "var proxy='__PROXY__',direct='DIRECT;',hop=Object.hasOwnProperty;if(proxy==='__PRO'+'XY__')proxy=eval('__PRO'+'XY__');function FindProxyForURL(r,t){if(hop.call(whitelist,t))return direct;var l,i=t.lastIndexOf('.');for(i=t.lastIndexOf('.',i-1);;){if(i<=0)return hop.call(blacklist,t)?proxy:direct;if(l=t.substring(i+1),hop.call(blacklist,l))return proxy;i=t.lastIndexOf('.',i-1)}}";
 
     static void Main()
     {
